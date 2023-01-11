@@ -1,4 +1,4 @@
-package com.springboot.app.utils;
+package com.springboot.app.utils.pagination;
 
 public class SortPageConst {
     public static final String PAGE_NUMBER = "0";

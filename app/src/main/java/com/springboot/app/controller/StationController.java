@@ -3,7 +3,8 @@ package com.springboot.app.controller;
 import com.springboot.app.payload.PagedSortedDto;
 import com.springboot.app.payload.station.StationDto;
 import com.springboot.app.service.interfaces.StationService;
-import com.springboot.app.utils.SortPageConst;
+import com.springboot.app.utils.pagination.SortPageConst;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class StationController {
     private final StationService stationService;
     @PostMapping
-    public ResponseEntity<StationDto> insertStation(@RequestBody StationDto stationDto){
+    public ResponseEntity<StationDto> insertStation(@RequestBody @Valid StationDto stationDto){
         return new ResponseEntity<>(stationService.insertStation(stationDto), HttpStatus.CREATED);
     }
     @GetMapping("/{idStation}")
@@ -36,7 +37,7 @@ public class StationController {
         return new ResponseEntity<>(stationService.getStationByName(name), HttpStatus.OK);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<StationDto> updateStation(@RequestBody StationDto stationDto, @PathVariable Long id){
+    public ResponseEntity<StationDto> updateStation(@RequestBody @Valid StationDto stationDto, @PathVariable Long id){
         return new ResponseEntity<>(stationService.updateStation(stationDto, id), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

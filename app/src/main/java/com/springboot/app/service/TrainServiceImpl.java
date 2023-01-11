@@ -2,6 +2,7 @@ package com.springboot.app.service;
 
 import com.springboot.app.entity.Route;
 import com.springboot.app.entity.Train;
+import com.springboot.app.exception.ResourceNotFoundException;
 import com.springboot.app.payload.*;
 import com.springboot.app.payload.route.RouteForBookingDto;
 import com.springboot.app.payload.schedule.ScheduleDto;
@@ -9,7 +10,7 @@ import com.springboot.app.payload.train.TrainDto;
 import com.springboot.app.payload.train.TrainWithCompleteRouteDto;
 import com.springboot.app.repository.TrainRepository;
 import com.springboot.app.service.interfaces.*;
-import com.springboot.app.utils.SortPage;
+import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class TrainServiceImpl implements TrainService {
     }
 
     private Train getTrainByIdAsTrain(Long id){
-        return trainRepository.findById(id).orElseThrow(RuntimeException::new);
+        return trainRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Train", "id", id));
     }
     private TrainWithCompleteRouteDto saveTrainAndMapToDto(Train train){
         return (TrainWithCompleteRouteDto) objectsMapperService

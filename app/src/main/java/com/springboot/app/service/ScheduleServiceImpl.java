@@ -2,6 +2,7 @@ package com.springboot.app.service;
 
 import com.springboot.app.entity.Schedule;
 import com.springboot.app.entity.Train;
+import com.springboot.app.exception.ResourceNotFoundException;
 import com.springboot.app.payload.PagedSortedDto;
 import com.springboot.app.payload.schedule.ScheduleDto;
 import com.springboot.app.payload.schedule.ScheduleForBookingDto;
@@ -9,7 +10,7 @@ import com.springboot.app.repository.ScheduleRepository;
 import com.springboot.app.repository.TrainRepository;
 import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.ScheduleService;
-import com.springboot.app.utils.SortPage;
+import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduleForBookingDto createSchedule(ScheduleDto scheduleDto, Long idTrain) {
         Schedule schedule = (Schedule) objectsMapperService.mapFromTo(scheduleDto, new Schedule());
-        Train train = trainRepository.findById(idTrain).orElseThrow(RuntimeException::new);
+        Train train = trainRepository.findById(idTrain).orElseThrow(() -> new ResourceNotFoundException("Train", "id", idTrain));
         schedule.setTrain(train);
         return (ScheduleForBookingDto) objectsMapperService
                 .mapFromTo(scheduleRepository.save(schedule), new ScheduleDto());
@@ -71,24 +72,32 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<ScheduleForBookingDto> getAllTrainsToDestination(String nameDestination) {
-        return scheduleRepository.findAll()
+        List<ScheduleForBookingDto> list = scheduleRepository.findAll()
                 .stream()
                 .filter(schedule -> schedule.getTrain().getRoute().getToPlace().contains(nameDestination))
                 .map(schedule -> (ScheduleForBookingDto) objectsMapperService.mapFromTo(schedule, new ScheduleDto()))
                 .toList();
+        if(list.size() == 0){
+            throw new ResourceNotFoundException("Destination", "name", nameDestination);
+        }
+        return list;
     }
 
     @Override
     public List<ScheduleForBookingDto> getAllTrainsToDestinationAndStation(String nameDestination, Long idStation) {
-        return scheduleRepository.findAll()
+        List<ScheduleForBookingDto> list = scheduleRepository.findAll()
                 .stream()
                 .filter(schedule -> schedule.getTrain().getRoute().getToPlace().contains(nameDestination))
                 .filter(schedule -> schedule.getTrain().getRoute().stationsContains(idStation))
                 .map(schedule -> (ScheduleForBookingDto) objectsMapperService.mapFromTo(schedule, new ScheduleDto()))
                 .toList();
+        if(list.size() == 0){
+            throw new ResourceNotFoundException("Destination and/or station", "name and/or id", nameDestination + " and/or " + idStation);
+        }
+        return list;
     }
 
     public Schedule getScheduleByIdAsSchedule(Long id){
-        return scheduleRepository.findById(id).orElseThrow(RuntimeException::new);
+        return scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Schedule", "id", id));
     }
 }

@@ -1,4 +1,4 @@
-package com.springboot.app.utils;
+package com.springboot.app.utils.enums;
 
 public enum Class {
     CLASS_I,

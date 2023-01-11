@@ -1,11 +1,8 @@
 package com.springboot.app.entity;
 
-import com.springboot.app.utils.Type;
+import com.springboot.app.utils.enums.Type;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter

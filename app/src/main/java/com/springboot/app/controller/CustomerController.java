@@ -6,7 +6,8 @@ import com.springboot.app.payload.customer.CustomerWithBookingsDto;
 import com.springboot.app.payload.PagedSortedDto;
 import com.springboot.app.service.interfaces.BookingService;
 import com.springboot.app.service.interfaces.CustomerService;
-import com.springboot.app.utils.SortPageConst;
+import com.springboot.app.utils.pagination.SortPageConst;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class CustomerController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<CustomerDto> insertCustomer(@RequestBody CustomerDto customerDto){
+    public ResponseEntity<CustomerDto> insertCustomer(@RequestBody @Valid CustomerDto customerDto){
         return new ResponseEntity<>(customerService.insertCustomer(customerDto), HttpStatus.CREATED);
     }
 
@@ -66,7 +67,7 @@ public class CustomerController {
     }
 
     @PostMapping("/{customerId}/schedule/{scheduleId}")
-    public ResponseEntity<BookingDto> createBooking(@RequestBody BookingDto bookingDto,
+    public ResponseEntity<BookingDto> createBooking(@RequestBody @Valid BookingDto bookingDto,
                                                     @PathVariable Long scheduleId,
                                                     @PathVariable Long customerId){
         return new ResponseEntity<>(bookingService.createBooking(bookingDto, scheduleId, customerId), HttpStatus.CREATED);

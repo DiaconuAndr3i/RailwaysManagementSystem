@@ -1,18 +1,20 @@
 package com.springboot.app.payload.booking;
 
 import com.springboot.app.payload.schedule.ScheduleForBookingDto;
-import com.springboot.app.utils.Class;
+import com.springboot.app.utils.validation.CompartmentValidation;
+import com.springboot.app.utils.enums.Class;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class BookingDto {
     private Long id;
-    @NotEmpty(message = "Name class cannot be empty")
     private Class trainClass;
-    @NotEmpty(message = "Name class cannot be empty")
+    @NotEmpty(message = "Compartment cannot be null or empty")
+    @CompartmentValidation
     private String compartment;
-    @NotEmpty(message = "Name class cannot be empty")
+    @NotNull
     private Integer seat;
     private ScheduleForBookingDto schedule;
 }

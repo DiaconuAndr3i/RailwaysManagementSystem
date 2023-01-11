@@ -4,7 +4,8 @@ import com.springboot.app.payload.PagedSortedDto;
 import com.springboot.app.payload.schedule.ScheduleDto;
 import com.springboot.app.payload.schedule.ScheduleForBookingDto;
 import com.springboot.app.service.interfaces.ScheduleService;
-import com.springboot.app.utils.SortPageConst;
+import com.springboot.app.utils.pagination.SortPageConst;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import java.util.List;
 public class ScheduleController {
     private final ScheduleService scheduleService;
     @PostMapping("/train/{idTrain}")
-    public ResponseEntity<ScheduleForBookingDto> insertSchedule(@RequestBody ScheduleDto scheduleDto, @PathVariable Long idTrain){
+    public ResponseEntity<ScheduleForBookingDto> insertSchedule(@RequestBody @Valid ScheduleDto scheduleDto, @PathVariable Long idTrain){
         return new ResponseEntity<>(scheduleService.createSchedule(scheduleDto, idTrain), HttpStatus.CREATED);
     }
     @GetMapping("/{idSchedule}")
@@ -44,7 +45,7 @@ public class ScheduleController {
         return new ResponseEntity<>(scheduleService.getAllSchedules(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ScheduleForBookingDto> updateSchedule(@RequestBody ScheduleDto scheduleDto, @PathVariable Long id){
+    public ResponseEntity<ScheduleForBookingDto> updateSchedule(@RequestBody @Valid ScheduleDto scheduleDto, @PathVariable Long id){
         return new ResponseEntity<>(scheduleService.updateSchedule(id, scheduleDto), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

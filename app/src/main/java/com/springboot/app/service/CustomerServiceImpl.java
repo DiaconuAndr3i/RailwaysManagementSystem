@@ -3,6 +3,7 @@ package com.springboot.app.service;
 import com.springboot.app.entity.Booking;
 import com.springboot.app.entity.Customer;
 import com.springboot.app.entity.Schedule;
+import com.springboot.app.exception.ResourceNotFoundException;
 import com.springboot.app.payload.booking.BookingDto;
 import com.springboot.app.payload.customer.CustomerDto;
 import com.springboot.app.payload.PagedSortedDto;
@@ -12,7 +13,7 @@ import com.springboot.app.service.interfaces.BookingService;
 import com.springboot.app.service.interfaces.CustomerService;
 import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.ScheduleService;
-import com.springboot.app.utils.SortPage;
+import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
     }
 
     private Customer getCustomerById(Long idCustomer){
-        return customerRepository.findById(idCustomer).orElseThrow(RuntimeException::new);
+        return customerRepository.findById(idCustomer).orElseThrow(() -> new ResourceNotFoundException("Customer", "id", idCustomer));
     }
 
     @Override
@@ -85,7 +86,7 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
 
     @Override
     public BookingDto updateBooking(Long bookingId, BookingDto bookingDto) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(RuntimeException::new);
+        Booking booking = getBookingById(bookingId);
         booking.setSeat(bookingDto.getSeat());
         booking.setCompartment(bookingDto.getCompartment());
         booking.setTrainClass(bookingDto.getTrainClass());
@@ -94,9 +95,13 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
 
     @Override
     public String deleteBooking(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(RuntimeException::new);
+        Booking booking = getBookingById(bookingId);
         bookingRepository.delete(booking);
         return "Booking was deleted successfully!";
+    }
+
+    private Booking getBookingById(Long idBooking){
+        return bookingRepository.findById(idBooking).orElseThrow(() -> new ResourceNotFoundException("Booking", "id", idBooking));
     }
 
     private BookingDto saveAndMapToDto(Booking booking){

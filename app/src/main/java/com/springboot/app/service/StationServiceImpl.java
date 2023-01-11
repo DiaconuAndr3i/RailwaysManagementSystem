@@ -2,13 +2,14 @@ package com.springboot.app.service;
 
 import com.springboot.app.entity.Route;
 import com.springboot.app.entity.Station;
+import com.springboot.app.exception.ResourceNotFoundException;
 import com.springboot.app.payload.PagedSortedDto;
 import com.springboot.app.payload.station.StationDto;
 import com.springboot.app.repository.RouteRepository;
 import com.springboot.app.repository.StationRepository;
 import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.StationService;
-import com.springboot.app.utils.SortPage;
+import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public StationDto getStationByName(String name) {
-        Station station = stationRepository.getStationByName(name).orElseThrow(RuntimeException::new);
+        Station station = stationRepository.getStationByName(name).orElseThrow(() -> new ResourceNotFoundException("Station", "name", name));
         return (StationDto) objectsMapperService.mapFromTo(station, new StationDto());
     }
 
@@ -63,7 +64,7 @@ public class StationServiceImpl implements StationService {
     @Override
     public String deleteStation(Long id) {
         Station station = getStationByIdAsStation(id);
-        List<Route> routeList = routeRepository.findByStationsId(id).orElseThrow(RuntimeException::new);
+        List<Route> routeList = routeRepository.findByStationsId(id).orElseThrow(() -> new ResourceNotFoundException("Route", "id", id));
         routeList.forEach(route -> route.removeStationFromRoute(station));
         routeRepository.saveAll(routeList);
         stationRepository.delete(station);
@@ -72,6 +73,6 @@ public class StationServiceImpl implements StationService {
 
 
     private Station getStationByIdAsStation(Long id){
-        return stationRepository.findById(id).orElseThrow(RuntimeException::new);
+        return stationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Station", "id", id));
     }
 }

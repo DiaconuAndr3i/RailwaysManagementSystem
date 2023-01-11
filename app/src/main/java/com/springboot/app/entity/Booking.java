@@ -1,6 +1,6 @@
 package com.springboot.app.entity;
 
-import com.springboot.app.utils.Class;
+import com.springboot.app.utils.enums.Class;
 import jakarta.persistence.*;
 import lombok.*;
 

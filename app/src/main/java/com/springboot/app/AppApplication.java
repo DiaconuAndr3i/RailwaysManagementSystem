@@ -2,8 +2,8 @@ package com.springboot.app;
 
 import com.springboot.app.entity.*;
 import com.springboot.app.repository.*;
-import com.springboot.app.utils.Class;
-import com.springboot.app.utils.Type;
+import com.springboot.app.utils.enums.Class;
+import com.springboot.app.utils.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

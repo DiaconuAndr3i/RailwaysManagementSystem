@@ -1,4 +1,4 @@
-package com.springboot.app.utils;
+package com.springboot.app.utils.pagination;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

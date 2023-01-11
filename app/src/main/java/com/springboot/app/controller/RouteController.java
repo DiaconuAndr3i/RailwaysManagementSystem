@@ -6,7 +6,8 @@ import com.springboot.app.payload.route.RouteForBookingDto;
 import com.springboot.app.payload.station.ListIdsStationsDto;
 import com.springboot.app.payload.station.StationDto;
 import com.springboot.app.service.interfaces.RouteService;
-import com.springboot.app.utils.SortPageConst;
+import com.springboot.app.utils.pagination.SortPageConst;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class RouteController {
     }
 
     @PostMapping
-    public ResponseEntity<RouteForBookingDto> createRoute(@RequestBody RouteDto routeDto){
+    public ResponseEntity<RouteForBookingDto> createRoute(@RequestBody @Valid RouteDto routeDto){
         return new ResponseEntity<>(routeService.createRoute(routeDto), HttpStatus.OK);
     }
     @PutMapping("/{id}")
@@ -60,7 +61,7 @@ public class RouteController {
     }
     @PutMapping("/{id}/station")
     public ResponseEntity<RouteForBookingDto> addStationToRoute(@PathVariable(name = "id") Long idRoute,
-                                                                @RequestBody StationDto stationDto){
+                                                                @RequestBody @Valid StationDto stationDto){
         return new ResponseEntity<>(routeService.addStationToRoute(idRoute, stationDto), HttpStatus.CREATED);
     }
     @PutMapping("/{idRoute}/station/{idStation}")

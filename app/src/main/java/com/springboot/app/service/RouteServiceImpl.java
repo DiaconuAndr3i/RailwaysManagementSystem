@@ -3,6 +3,7 @@ package com.springboot.app.service;
 import com.springboot.app.entity.Route;
 import com.springboot.app.entity.Station;
 import com.springboot.app.entity.Train;
+import com.springboot.app.exception.ResourceNotFoundException;
 import com.springboot.app.payload.*;
 import com.springboot.app.payload.route.RouteDto;
 import com.springboot.app.payload.route.RouteForBookingDto;
@@ -13,7 +14,7 @@ import com.springboot.app.repository.TrainRepository;
 import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.RouteService;
 import com.springboot.app.service.interfaces.StationService;
-import com.springboot.app.utils.SortPage;
+import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public String deleteRoute(Long id) {
         Route route = getRouteByIdAsRoute(id);
-        List<Train> trainList = trainRepository.findAllByRouteId(id).orElseThrow(RuntimeException::new);
+        List<Train> trainList = trainRepository.findAllByRouteId(id).orElseThrow(() -> new ResourceNotFoundException("Train", "id", id));
         trainList.forEach(train -> train.setRoute(null));
         trainRepository.saveAll(trainList);
         route.setStations(null);
@@ -76,6 +77,9 @@ public class RouteServiceImpl implements RouteService {
                 .filter(route -> route.stationsContains(stationId))
                 .map(route -> (RouteForBookingDto) objectsMapperService.mapFromTo(route, new RouteDto()))
                 .toList();
+        if(routes.size()==0){
+            throw new ResourceNotFoundException("Station", "id", stationId);
+        }
         return objectsMapperService.mapToSortedPaged(routes, routePages);
     }
 
@@ -105,7 +109,10 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public List<RouteForBookingDto> getRouteByDestination(String nameDestination) {
-        List<Route> routes = routeRepository.findAllByToPlace(nameDestination).orElseThrow(RuntimeException::new);
+        List<Route> routes = routeRepository.findAllByToPlace(nameDestination).orElseThrow(() -> new ResourceNotFoundException("Route", "toPlace", nameDestination));
+        if(routes.size()==0){
+            throw new ResourceNotFoundException("Route", "toPlace", nameDestination);
+        }
         return routes.stream()
                 .map(route -> (RouteDto)objectsMapperService.mapFromTo(route, new RouteDto()))
                 .collect(Collectors.toList());
@@ -117,6 +124,6 @@ public class RouteServiceImpl implements RouteService {
     }
 
     private Route getRouteByIdAsRoute(Long id){
-        return routeRepository.findById(id).orElseThrow(RuntimeException::new);
+        return routeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Route", "id", id));
     }
 }

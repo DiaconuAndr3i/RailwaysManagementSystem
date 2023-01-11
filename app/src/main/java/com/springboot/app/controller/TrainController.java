@@ -4,7 +4,8 @@ import com.springboot.app.payload.*;
 import com.springboot.app.payload.train.TrainDto;
 import com.springboot.app.payload.train.TrainWithCompleteRouteDto;
 import com.springboot.app.service.interfaces.TrainService;
-import com.springboot.app.utils.SortPageConst;
+import com.springboot.app.utils.pagination.SortPageConst;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class TrainController {
     }
 
     @PostMapping(value = {"/route/{id}", ""})
-    public ResponseEntity<TrainWithCompleteRouteDto> createTrain(@RequestBody TrainDto trainDto,
+    public ResponseEntity<TrainWithCompleteRouteDto> createTrain(@RequestBody @Valid TrainDto trainDto,
                                                                  @PathVariable(required = false) Long id){
         return new ResponseEntity<>(trainService.createTrain(trainDto, id), HttpStatus.OK);
     }
