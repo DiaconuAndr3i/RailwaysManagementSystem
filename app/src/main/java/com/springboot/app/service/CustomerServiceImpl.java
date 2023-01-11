@@ -1,11 +1,17 @@
 package com.springboot.app.service;
 
+import com.springboot.app.entity.Booking;
 import com.springboot.app.entity.Customer;
-import com.springboot.app.payload.CustomerDto;
+import com.springboot.app.entity.Schedule;
+import com.springboot.app.payload.booking.BookingDto;
+import com.springboot.app.payload.customer.CustomerDto;
 import com.springboot.app.payload.PagedSortedDto;
+import com.springboot.app.repository.BookingRepository;
 import com.springboot.app.repository.CustomerRepository;
+import com.springboot.app.service.interfaces.BookingService;
 import com.springboot.app.service.interfaces.CustomerService;
 import com.springboot.app.service.interfaces.ObjectsMapperService;
+import com.springboot.app.service.interfaces.ScheduleService;
 import com.springboot.app.utils.SortPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,10 +21,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, BookingService {
 
     private final CustomerRepository customerRepository;
     private final ObjectsMapperService objectsMapperService;
+    private final BookingRepository bookingRepository;
+    private final ScheduleService scheduleService;
     @Override
     public CustomerDto insertCustomer(CustomerDto customerDto) {
         return (CustomerDto) objectsMapperService
@@ -63,5 +71,35 @@ public class CustomerServiceImpl implements CustomerService {
 
     private Customer getCustomerById(Long idCustomer){
         return customerRepository.findById(idCustomer).orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    public BookingDto createBooking(BookingDto bookingDto, Long scheduleId, Long customerId) {
+        Booking booking = (Booking) objectsMapperService.mapFromTo(bookingDto, new Booking());
+        Schedule schedule = scheduleService.getScheduleByIdAsSchedule(scheduleId);
+        Customer customer = getCustomerById(customerId);
+        booking.setCustomer(customer);
+        booking.setSchedule(schedule);
+        return saveAndMapToDto(booking);
+    }
+
+    @Override
+    public BookingDto updateBooking(Long bookingId, BookingDto bookingDto) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(RuntimeException::new);
+        booking.setSeat(bookingDto.getSeat());
+        booking.setCompartment(bookingDto.getCompartment());
+        booking.setTrainClass(bookingDto.getTrainClass());
+        return saveAndMapToDto(booking);
+    }
+
+    @Override
+    public String deleteBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(RuntimeException::new);
+        bookingRepository.delete(booking);
+        return "Booking was deleted successfully!";
+    }
+
+    private BookingDto saveAndMapToDto(Booking booking){
+        return (BookingDto) objectsMapperService.mapFromTo(bookingRepository.save(booking), new BookingDto());
     }
 }

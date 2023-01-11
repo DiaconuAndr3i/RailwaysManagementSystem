@@ -1,4 +1,4 @@
-package com.springboot.app.payload;
+package com.springboot.app.payload.customer;
 
 import lombok.Data;
 

@@ -1,5 +1,6 @@
-package com.springboot.app.payload;
+package com.springboot.app.payload.route;
 
+import com.springboot.app.payload.station.StationDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

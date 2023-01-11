@@ -3,7 +3,7 @@ package com.springboot.app.service;
 import com.springboot.app.entity.Route;
 import com.springboot.app.entity.Station;
 import com.springboot.app.payload.PagedSortedDto;
-import com.springboot.app.payload.StationDto;
+import com.springboot.app.payload.station.StationDto;
 import com.springboot.app.repository.RouteRepository;
 import com.springboot.app.repository.StationRepository;
 import com.springboot.app.service.interfaces.ObjectsMapperService;

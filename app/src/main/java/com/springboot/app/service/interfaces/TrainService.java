@@ -1,8 +1,8 @@
 package com.springboot.app.service.interfaces;
 
 import com.springboot.app.payload.PagedSortedDto;
-import com.springboot.app.payload.TrainDto;
-import com.springboot.app.payload.TrainWithCompleteRouteDto;
+import com.springboot.app.payload.train.TrainDto;
+import com.springboot.app.payload.train.TrainWithCompleteRouteDto;
 
 public interface TrainService {
     TrainWithCompleteRouteDto createTrain(TrainDto trainDto, Long idRoute);

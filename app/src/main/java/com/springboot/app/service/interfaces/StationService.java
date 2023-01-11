@@ -1,7 +1,7 @@
 package com.springboot.app.service.interfaces;
 
 import com.springboot.app.payload.PagedSortedDto;
-import com.springboot.app.payload.StationDto;
+import com.springboot.app.payload.station.StationDto;
 
 public interface StationService {
     StationDto insertStation(StationDto stationDto);

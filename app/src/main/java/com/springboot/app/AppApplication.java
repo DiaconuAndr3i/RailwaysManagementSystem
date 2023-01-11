@@ -21,7 +21,6 @@ public class AppApplication implements CommandLineRunner {
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
     private final StationRepository stationRepository;
-    private final TimeRepository timeRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(AppApplication.class, args);

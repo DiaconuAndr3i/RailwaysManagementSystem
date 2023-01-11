@@ -1,5 +1,6 @@
-package com.springboot.app.payload;
+package com.springboot.app.payload.customer;
 
+import com.springboot.app.payload.booking.BookingDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

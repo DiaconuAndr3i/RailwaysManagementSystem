@@ -1,4 +1,4 @@
-package com.springboot.app.payload;
+package com.springboot.app.payload.train;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

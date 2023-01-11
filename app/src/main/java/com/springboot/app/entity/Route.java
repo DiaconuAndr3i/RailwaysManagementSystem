@@ -49,4 +49,8 @@ public class Route {
     public void removeStationFromRoute(Station station){
         stations.removeIf(localStation -> localStation.compareTwoStations(station));
     }
+
+    public boolean stationsContains(Long idStation){
+        return stations.stream().anyMatch(station -> station.getId().equals(idStation));
+    }
 }

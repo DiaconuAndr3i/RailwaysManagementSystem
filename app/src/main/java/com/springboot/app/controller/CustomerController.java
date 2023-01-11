@@ -1,8 +1,10 @@
 package com.springboot.app.controller;
 
-import com.springboot.app.payload.CustomerDto;
-import com.springboot.app.payload.CustomerWithBookingsDto;
+import com.springboot.app.payload.booking.BookingDto;
+import com.springboot.app.payload.customer.CustomerDto;
+import com.springboot.app.payload.customer.CustomerWithBookingsDto;
 import com.springboot.app.payload.PagedSortedDto;
+import com.springboot.app.service.interfaces.BookingService;
 import com.springboot.app.service.interfaces.CustomerService;
 import com.springboot.app.utils.SortPageConst;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CustomerController {
     private final CustomerService customerService;
+    private final BookingService bookingService;
 
     @PostMapping
     public ResponseEntity<CustomerDto> insertCustomer(@RequestBody CustomerDto customerDto){
@@ -60,5 +63,23 @@ public class CustomerController {
     @DeleteMapping("/{idCustomer}")
     public ResponseEntity<String> deleteCustomer(@PathVariable(name = "idCustomer") Long id){
         return new ResponseEntity<>(customerService.deleteCustomer(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/{customerId}/schedule/{scheduleId}")
+    public ResponseEntity<BookingDto> createBooking(@RequestBody BookingDto bookingDto,
+                                                    @PathVariable Long scheduleId,
+                                                    @PathVariable Long customerId){
+        return new ResponseEntity<>(bookingService.createBooking(bookingDto, scheduleId, customerId), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/booking/{id}")
+    public ResponseEntity<BookingDto> updateBooking(@RequestBody BookingDto bookingDto,
+                                                    @PathVariable Long id){
+        return new ResponseEntity<>(bookingService.updateBooking(id, bookingDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/booking/{id}")
+    public ResponseEntity<String> deleteBooking(@PathVariable(name = "id") Long id){
+        return new ResponseEntity<>(bookingService.deleteBooking(id), HttpStatus.OK);
     }
 }

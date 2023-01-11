@@ -1,5 +1,6 @@
-package com.springboot.app.payload;
+package com.springboot.app.payload.schedule;
 
+import com.springboot.app.payload.train.TrainDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -7,5 +8,5 @@ import java.util.Date;
 public class ScheduleForBookingDto {
     private Date departureTime;
     private Date arrivalTime;
-    TrainForBookingDto train;
+    TrainDto train;
 }

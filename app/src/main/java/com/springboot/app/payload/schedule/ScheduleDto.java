@@ -1,6 +1,5 @@
-package com.springboot.app.payload;
+package com.springboot.app.payload.schedule;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

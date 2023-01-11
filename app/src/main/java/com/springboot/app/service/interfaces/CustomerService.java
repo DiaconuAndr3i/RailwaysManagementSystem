@@ -1,6 +1,6 @@
 package com.springboot.app.service.interfaces;
 
-import com.springboot.app.payload.CustomerDto;
+import com.springboot.app.payload.customer.CustomerDto;
 import com.springboot.app.payload.PagedSortedDto;
 
 public interface CustomerService {

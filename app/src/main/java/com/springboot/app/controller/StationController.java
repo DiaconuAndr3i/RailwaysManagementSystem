@@ -1,8 +1,7 @@
 package com.springboot.app.controller;
 
-import com.springboot.app.payload.CustomerWithBookingsDto;
 import com.springboot.app.payload.PagedSortedDto;
-import com.springboot.app.payload.StationDto;
+import com.springboot.app.payload.station.StationDto;
 import com.springboot.app.service.interfaces.StationService;
 import com.springboot.app.utils.SortPageConst;
 import lombok.RequiredArgsConstructor;

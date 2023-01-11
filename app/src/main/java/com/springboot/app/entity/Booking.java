@@ -18,18 +18,15 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(
-            nullable = false,
-            unique = true
+            nullable = false
     )
     private Class trainClass;
     @Column(
-            nullable = false,
-            unique = true
+            nullable = false
     )
     private String compartment;
     @Column(
-            nullable = false,
-            unique = true
+            nullable = false
     )
     private Integer seat;
 

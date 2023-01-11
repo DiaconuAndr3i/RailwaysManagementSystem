@@ -4,6 +4,10 @@ import com.springboot.app.entity.Route;
 import com.springboot.app.entity.Station;
 import com.springboot.app.entity.Train;
 import com.springboot.app.payload.*;
+import com.springboot.app.payload.route.RouteDto;
+import com.springboot.app.payload.route.RouteForBookingDto;
+import com.springboot.app.payload.station.ListIdsStationsDto;
+import com.springboot.app.payload.station.StationDto;
 import com.springboot.app.repository.RouteRepository;
 import com.springboot.app.repository.TrainRepository;
 import com.springboot.app.service.interfaces.ObjectsMapperService;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +69,17 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    public PagedSortedDto getAllRoutesWhichContainsStation(int pageNo, int pageSize, String sortBy, String sortDir, Long stationId) {
+        Page<Route> routePages = routeRepository.findAll(SortPage.getPageable(pageNo, pageSize, sortBy, sortDir));
+        List<RouteForBookingDto> routes = routePages.getContent()
+                .stream()
+                .filter(route -> route.stationsContains(stationId))
+                .map(route -> (RouteForBookingDto) objectsMapperService.mapFromTo(route, new RouteDto()))
+                .toList();
+        return objectsMapperService.mapToSortedPaged(routes, routePages);
+    }
+
+    @Override
     public RouteForBookingDto addStationToRoute(Long idRoute, StationDto stationDto) {
         Route route = getRouteByIdAsRoute(idRoute);
         route.addStationToRoute((Station) objectsMapperService
@@ -85,6 +101,14 @@ public class RouteServiceImpl implements RouteService {
         StationDto stationDto = stationService.getStationById(idStation);
         route.removeStationFromRoute((Station) objectsMapperService.mapFromTo(stationDto, new Station()));
         return saveRouteAndMapToDto(route);
+    }
+
+    @Override
+    public List<RouteForBookingDto> getRouteByDestination(String nameDestination) {
+        List<Route> routes = routeRepository.findAllByToPlace(nameDestination).orElseThrow(RuntimeException::new);
+        return routes.stream()
+                .map(route -> (RouteDto)objectsMapperService.mapFromTo(route, new RouteDto()))
+                .collect(Collectors.toList());
     }
 
     private RouteForBookingDto saveRouteAndMapToDto(Route route){
