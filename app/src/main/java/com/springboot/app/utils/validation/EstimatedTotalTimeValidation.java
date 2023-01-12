@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = EstimatedTotalTimeValidator.class)
 public @interface EstimatedTotalTimeValidation {
-    public String message() default "The field should be in the form: numberHours:numberMinutes (numberMinutes < 60). Example: 2:45";
+    String message() default "The field should be in the form: numberHours:numberMinutes (numberMinutes < 60). Example: 2:45";
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = CompartmentValidator.class)
 public @interface CompartmentValidation {
-    public String message() default "Compartment type is invalid, you can choose a compartment which starts with a letter and then follows digits";
+    String message() default "Compartment type is invalid, you can choose a compartment which starts with a letter and then follows digits";
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

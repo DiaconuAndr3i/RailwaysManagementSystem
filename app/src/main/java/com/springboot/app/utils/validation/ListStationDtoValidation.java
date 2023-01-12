@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = ListStationDtoValidator.class)
 public @interface ListStationDtoValidation {
-    public String message() default "Name or city from the list of station cannot be null or empty";
+    String message() default "Name or city from the list of station cannot be null or empty";
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
