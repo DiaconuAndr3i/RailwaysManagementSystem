@@ -15,6 +15,7 @@ import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.ScheduleService;
 import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +29,11 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
     private final ObjectsMapperService objectsMapperService;
     private final BookingRepository bookingRepository;
     private final ScheduleService scheduleService;
+    private final ModelMapper modelMapper;
     @Override
     public CustomerDto insertCustomer(CustomerDto customerDto) {
-        return (CustomerDto) objectsMapperService
-                .mapFromTo(customerRepository
-                                .save((Customer) objectsMapperService.mapFromTo(customerDto, new Customer())), new CustomerDto());
+        return modelMapper.map(customerRepository
+                .save(modelMapper.map(customerDto, Customer.class)), CustomerDto.class);
     }
 
 
@@ -41,7 +42,7 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
         Page<Customer> customerPages = customerRepository.findAll(SortPage.getPageable(pageNo, pageSize, sortBy, sortDir));
         List<CustomerDto> listObject = customerPages.getContent()
                 .stream()
-                .map(customer -> (CustomerDto) objectsMapperService.mapFromTo(customer, object))
+                .map(customer -> (CustomerDto) modelMapper.map(customer, object.getClass()))
                 .toList();
         return objectsMapperService.mapToSortedPaged(listObject, customerPages);
     }
@@ -49,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
     @Override
     public <T> CustomerDto getCustomerById(Long idCustomer, T object) {
         Customer customer = getCustomerById(idCustomer);
-        return (CustomerDto) objectsMapperService.mapFromTo(customer, object);
+        return (CustomerDto) modelMapper.map(customer, object.getClass());
     }
 
     @Override
@@ -60,8 +61,7 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
         customer.setFirstName(customerDto.getFirstName());
         customer.setLastName(customerDto.getLastName());
 
-        return (CustomerDto) objectsMapperService
-                .mapFromTo(customerRepository.save(customer), new CustomerDto());
+        return modelMapper.map(customerRepository.save(customer), CustomerDto.class);
     }
 
     @Override
@@ -70,13 +70,13 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
         return "Customer was successfully deleted!";
     }
 
-    private Customer getCustomerById(Long idCustomer){
+    public Customer getCustomerById(Long idCustomer){
         return customerRepository.findById(idCustomer).orElseThrow(() -> new ResourceNotFoundException("Customer", "id", idCustomer));
     }
 
     @Override
     public BookingDto createBooking(BookingDto bookingDto, Long scheduleId, Long customerId) {
-        Booking booking = (Booking) objectsMapperService.mapFromTo(bookingDto, new Booking());
+        Booking booking = modelMapper.map(bookingDto, Booking.class);
         Schedule schedule = scheduleService.getScheduleByIdAsSchedule(scheduleId);
         Customer customer = getCustomerById(customerId);
         booking.setCustomer(customer);
@@ -100,11 +100,11 @@ public class CustomerServiceImpl implements CustomerService, BookingService {
         return "Booking was deleted successfully!";
     }
 
-    private Booking getBookingById(Long idBooking){
+    public Booking getBookingById(Long idBooking){
         return bookingRepository.findById(idBooking).orElseThrow(() -> new ResourceNotFoundException("Booking", "id", idBooking));
     }
 
-    private BookingDto saveAndMapToDto(Booking booking){
-        return (BookingDto) objectsMapperService.mapFromTo(bookingRepository.save(booking), new BookingDto());
+    public BookingDto saveAndMapToDto(Booking booking){
+        return modelMapper.map(bookingRepository.save(booking), BookingDto.class);
     }
 }

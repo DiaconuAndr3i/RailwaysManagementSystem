@@ -16,6 +16,7 @@ import com.springboot.app.service.interfaces.RouteService;
 import com.springboot.app.service.interfaces.StationService;
 import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +30,11 @@ public class RouteServiceImpl implements RouteService {
     private final RouteRepository routeRepository;
     private final ObjectsMapperService objectsMapperService;
     private final TrainRepository trainRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public RouteForBookingDto createRoute(RouteDto routeDto) {
-        return saveRouteAndMapToDto((Route) objectsMapperService
-                .mapFromTo(routeDto, new Route()));
+        return saveRouteAndMapToDto(modelMapper.map(routeDto, Route.class));
     }
 
     @Override
@@ -44,8 +45,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public RouteForBookingDto getRouteById(Long idRoute) {
-        return (RouteForBookingDto) objectsMapperService
-                .mapFromTo(getRouteByIdAsRoute(idRoute), new RouteDto());
+        return modelMapper.map(getRouteByIdAsRoute(idRoute), RouteDto.class);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class RouteServiceImpl implements RouteService {
         Page<Route> routePages = routeRepository.findAll(SortPage.getPageable(pageNo, pageSize, sortBy, sortDir));
         List<RouteForBookingDto> routes = routePages.getContent()
                 .stream()
-                .map(route -> (RouteForBookingDto) objectsMapperService.mapFromTo(route, new RouteDto()))
+                .map(route -> (RouteForBookingDto) modelMapper.map(route, RouteDto.class))
                 .toList();
         return objectsMapperService.mapToSortedPaged(routes, routePages);
     }
@@ -75,7 +75,7 @@ public class RouteServiceImpl implements RouteService {
         List<RouteForBookingDto> routes = routePages.getContent()
                 .stream()
                 .filter(route -> route.stationsContains(stationId))
-                .map(route -> (RouteForBookingDto) objectsMapperService.mapFromTo(route, new RouteDto()))
+                .map(route -> (RouteForBookingDto) modelMapper.map(route, RouteDto.class))
                 .toList();
         if(routes.size()==0){
             throw new ResourceNotFoundException("Station", "id", stationId);
@@ -86,8 +86,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public RouteForBookingDto addStationToRoute(Long idRoute, StationDto stationDto) {
         Route route = getRouteByIdAsRoute(idRoute);
-        route.addStationToRoute((Station) objectsMapperService
-                .mapFromTo(stationService.insertStation(stationDto), new Station()));
+        route.addStationToRoute(modelMapper.map(stationService.insertStation(stationDto), Station.class));
         return saveRouteAndMapToDto(route);
     }
 
@@ -95,7 +94,7 @@ public class RouteServiceImpl implements RouteService {
     public RouteForBookingDto addStationToRouteById(Long idRoute, Long idStation) {
         Route route = getRouteByIdAsRoute(idRoute);
         StationDto stationDto = stationService.getStationById(idStation);
-        route.addStationToRoute((Station) objectsMapperService.mapFromTo(stationDto, new Station()));
+        route.addStationToRoute(modelMapper.map(stationDto, Station.class));
         return saveRouteAndMapToDto(route);
     }
 
@@ -103,7 +102,7 @@ public class RouteServiceImpl implements RouteService {
     public RouteForBookingDto removeStationFromRoute(Long idRoute, Long idStation) {
         Route route = getRouteByIdAsRoute(idRoute);
         StationDto stationDto = stationService.getStationById(idStation);
-        route.removeStationFromRoute((Station) objectsMapperService.mapFromTo(stationDto, new Station()));
+        route.removeStationFromRoute(modelMapper.map(stationDto, Station.class));
         return saveRouteAndMapToDto(route);
     }
 
@@ -114,16 +113,15 @@ public class RouteServiceImpl implements RouteService {
             throw new ResourceNotFoundException("Route", "toPlace", nameDestination);
         }
         return routes.stream()
-                .map(route -> (RouteDto)objectsMapperService.mapFromTo(route, new RouteDto()))
+                .map(route -> modelMapper.map(route, RouteDto.class))
                 .collect(Collectors.toList());
     }
 
-    private RouteForBookingDto saveRouteAndMapToDto(Route route){
-        return (RouteForBookingDto) objectsMapperService
-                .mapFromTo(routeRepository.save(route), new RouteDto());
+    public RouteForBookingDto saveRouteAndMapToDto(Route route){
+        return modelMapper.map(routeRepository.save(route), RouteDto.class);
     }
 
-    private Route getRouteByIdAsRoute(Long id){
+    public Route getRouteByIdAsRoute(Long id){
         return routeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Route", "id", id));
     }
 }

@@ -12,6 +12,7 @@ import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.ScheduleService;
 import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +24,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectsMapperService objectsMapperService;
     private final TrainRepository trainRepository;
+    private final ModelMapper modelMapper;
     @Override
     public ScheduleForBookingDto getScheduleById(Long idSchedule) {
-        return (ScheduleForBookingDto) objectsMapperService
-                .mapFromTo(getScheduleByIdAsSchedule(idSchedule), new ScheduleDto());
+        return modelMapper.map(getScheduleByIdAsSchedule(idSchedule), ScheduleDto.class);
     }
 
     @Override
     public ScheduleForBookingDto createSchedule(ScheduleDto scheduleDto, Long idTrain) {
-        Schedule schedule = (Schedule) objectsMapperService.mapFromTo(scheduleDto, new Schedule());
+        Schedule schedule = modelMapper.map(scheduleDto, Schedule.class);
         Train train = trainRepository.findById(idTrain).orElseThrow(() -> new ResourceNotFoundException("Train", "id", idTrain));
         schedule.setTrain(train);
-        return (ScheduleForBookingDto) objectsMapperService
-                .mapFromTo(scheduleRepository.save(schedule), new ScheduleDto());
+        return modelMapper.map(scheduleRepository.save(schedule), ScheduleDto.class);
     }
 
     @Override
@@ -45,13 +45,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setArrivalTime(scheduleDto.getArrivalTime());
         schedule.setClassIAvailableSeats(scheduleDto.getClassIAvailableSeats());
         schedule.setClassIIAvailableSeats(scheduleDto.getClassIIAvailableSeats());
-        return (ScheduleForBookingDto) objectsMapperService.mapFromTo(scheduleRepository.save(schedule), new ScheduleDto());
+        return modelMapper.map(scheduleRepository.save(schedule), ScheduleDto.class);
     }
 
     @Override
     public ScheduleForBookingDto getScheduleByIdTrain(Long idTrain) {
-        return (ScheduleForBookingDto) objectsMapperService
-                .mapFromTo(scheduleRepository.findByTrainId(idTrain), new ScheduleDto());
+        Schedule schedule = scheduleRepository.findByTrainId(idTrain).orElseThrow(() -> new ResourceNotFoundException("Schedule", "idTrain", idTrain));
+        return modelMapper.map(schedule, ScheduleDto.class);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         Page<Schedule> schedulePages = scheduleRepository.findAll(SortPage.getPageable(pageNo, pageSize, sortBy, sortDir));
         List<ScheduleDto> schedules = schedulePages.getContent()
                 .stream()
-                .map(schedule -> (ScheduleDto) objectsMapperService.mapFromTo(schedule, new ScheduleDto()))
+                .map(schedule -> modelMapper.map(schedule, ScheduleDto.class))
                 .toList();
         return objectsMapperService.mapToSortedPaged(schedules, schedulePages);
     }
@@ -75,7 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<ScheduleForBookingDto> list = scheduleRepository.findAll()
                 .stream()
                 .filter(schedule -> schedule.getTrain().getRoute().getToPlace().contains(nameDestination))
-                .map(schedule -> (ScheduleForBookingDto) objectsMapperService.mapFromTo(schedule, new ScheduleDto()))
+                .map(schedule -> (ScheduleForBookingDto) modelMapper.map(schedule, ScheduleDto.class))
                 .toList();
         if(list.size() == 0){
             throw new ResourceNotFoundException("Destination", "name", nameDestination);
@@ -89,7 +89,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .stream()
                 .filter(schedule -> schedule.getTrain().getRoute().getToPlace().contains(nameDestination))
                 .filter(schedule -> schedule.getTrain().getRoute().stationsContains(idStation))
-                .map(schedule -> (ScheduleForBookingDto) objectsMapperService.mapFromTo(schedule, new ScheduleDto()))
+                .map(schedule -> (ScheduleForBookingDto) modelMapper.map(schedule, ScheduleDto.class))
                 .toList();
         if(list.size() == 0){
             throw new ResourceNotFoundException("Destination and/or station", "name and/or id", nameDestination + " and/or " + idStation);

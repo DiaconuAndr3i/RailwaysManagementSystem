@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface ObjectsMapperService {
     PagedSortedDto mapToSortedPaged(List<?> DtoList, Page<?> pages);
-    <S,D> Object mapFromTo(S source, D destination);
 }

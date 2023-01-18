@@ -11,6 +11,7 @@ import com.springboot.app.service.interfaces.ObjectsMapperService;
 import com.springboot.app.service.interfaces.StationService;
 import com.springboot.app.utils.pagination.SortPage;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -22,16 +23,16 @@ public class StationServiceImpl implements StationService {
     private final StationRepository stationRepository;
     private final ObjectsMapperService objectsMapperService;
     private final RouteRepository routeRepository;
+    private final ModelMapper modelMapper;
     @Override
     public StationDto insertStation(StationDto stationDto) {
-        return (StationDto) objectsMapperService
-                .mapFromTo(stationRepository
-                        .save((Station) objectsMapperService.mapFromTo(stationDto, new Station())), new StationDto());
+        return modelMapper.map(stationRepository
+                .save(modelMapper.map(stationDto, Station.class)), StationDto.class);
     }
 
     @Override
     public StationDto getStationById(Long id) {
-        return (StationDto) objectsMapperService.mapFromTo(getStationByIdAsStation(id), new StationDto());
+        return modelMapper.map(getStationByIdAsStation(id), StationDto.class);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class StationServiceImpl implements StationService {
         Page<Station> stationPages = stationRepository.findAll(SortPage.getPageable(pageNo, pageSize, sortBy, sortDir));
         List<StationDto> stations = stationPages.getContent()
                 .stream()
-                .map(station -> (StationDto) objectsMapperService.mapFromTo(station, new StationDto()))
+                .map(station -> modelMapper.map(station, StationDto.class))
                 .toList();
         return objectsMapperService.mapToSortedPaged(stations, stationPages);
     }
@@ -47,7 +48,7 @@ public class StationServiceImpl implements StationService {
     @Override
     public StationDto getStationByName(String name) {
         Station station = stationRepository.getStationByName(name).orElseThrow(() -> new ResourceNotFoundException("Station", "name", name));
-        return (StationDto) objectsMapperService.mapFromTo(station, new StationDto());
+        return modelMapper.map(station, StationDto.class);
     }
 
     @Override
@@ -57,8 +58,7 @@ public class StationServiceImpl implements StationService {
         station.setCity(stationDto.getCity());
         station.setName(stationDto.getName());
 
-        return (StationDto) objectsMapperService
-                .mapFromTo(stationRepository.save(station), new StationDto());
+        return modelMapper.map(stationRepository.save(station), StationDto.class);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class StationServiceImpl implements StationService {
     }
 
 
-    private Station getStationByIdAsStation(Long id){
+    public Station getStationByIdAsStation(Long id){
         return stationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Station", "id", id));
     }
 }
