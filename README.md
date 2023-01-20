@@ -7,7 +7,7 @@
 </ol>
 
 <h1>Tools</h1>
-<p>For develope: Java with SpringBoot.</p>
+<p>For develope: <b>Java</b> with <b>SpringBoot</b>.</p>
 <p>For unit testing: <b>junit</b>, <b>mockito</b>.</p>
 <p>For integration testing: <b>junit</b>, <b>Testcontainers</b> and version <b>mysql:5-debian</b> for docker image of the database.</p>
 
